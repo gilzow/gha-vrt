@@ -67,7 +67,7 @@ runs:
         echo "::notice::Starting backstopjs to generate baseline images."
         npm run-script backstop:reference -- --refURL="${inputs.baseline_url}" -- testURL="${inputs.test_url}"
 
-    -name: 'run test'
+    - name: 'run test'
       id: run-test
       shell: bash
       run: |
@@ -83,11 +83,11 @@ runs:
         
         echo "::set-output name=results::${target_url}"
 
-    -name: 'export reports'
-     id: export-reports
-     uses: actions/upload-artifact@v3
-     with:
-       name: vrt-report
-       path: |
-         backstop_data
-         !backstop_data/engine_scripts/*
+    - name: 'export reports'
+      id: export-reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: vrt-report
+        path: |
+          backstop_data
+          !backstop_data/engine_scripts/*
