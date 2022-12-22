@@ -61,6 +61,16 @@ runs:
           echo "::error::Response from environment was something other than 200. Response returned was ${response}"
           exit 1;
         fi
+    - name: 'Verify return value'
+      id: 'verify-return-vale'
+      shell: bash
+      run: |
+        # we need to make sure they gave us a true/false, yes/no
+        if [[ "${{ inputs.report_results }}" =~ "yes" ]] || [[ "${{ inputs.report_results }}" =~ "true" ]]; then
+          echo "report_results=true" >> $GITHUB_ENV  
+        else
+          echo "report_results=false" >> $GITHUB_ENV
+        fi
     - name: 'install backstop'
       id: install-backstop
       shell: bash
