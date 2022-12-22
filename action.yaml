@@ -7,7 +7,11 @@ inputs:
   test_url:
     description: 'The URL of the PR site we want to test against the baseline'
     required: true
-#  If we ever decide to post an issue back to the PR?
+  report_results:
+    description: "Do you want this activity to report the results back to the calling workflow (true) or pass/fail directly (false)? Default is false."
+    required: false
+    default: 'false'
+  #  If we ever decide to post an issue back to the PR?
 #  github-token:
 #    description: 'Github token to the repository so we can work with the github api. Typically GITHUB_TOKEN'
 #    required: true
