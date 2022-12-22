@@ -21,9 +21,9 @@ inputs:
     required: false
     default: "0.1"
 outputs:
-  vrt_result:
+  results:
     description: "Reports from VRT"
-    value: ${{ steps.run-test.outputs.results }}
+    value: ${{ steps.report-results.outputs.results }}
 
 # Things we need to do
 # Verify the URLs we were given respond?
@@ -89,14 +89,27 @@ runs:
         else
           results="true"
         fi
-        
-        echo "::set-output name=results::${target_url}"
+      
+        echo "vrt_results=${results}" >> $GITHUB_ENV
 
     - name: 'export reports'
       id: export-reports
+      if: ${{ env.vrt_results == 'false' }}
       uses: actions/upload-artifact@v3
       with:
         name: vrt-report
         path: |
           ${{ github.action_path }}/backstop_data
           !${{ github.action_path }}/backstop_data/engine_scripts/*
+
+    - name: 'Report Results'
+      id: 'report-results'
+      shell: bash
+      run: |
+        # set the output
+        echo "results=${{ env.vrt_results }}" >> $GITHUB_OUTPUTS
+        if [[ "false" == "${{ env.report_results }} ]];
+          # they want the action result to be the same as the VRT result
+          exitcode=$([ "true" = "${{ env.vrt_results }}" ]);
+          exit ${exitcode}
+        fi
