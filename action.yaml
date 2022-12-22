@@ -60,11 +60,13 @@ runs:
     - name: 'install backstop'
       id: install-backstop
       shell: bash
+      working-directory: $GITHUB_ACTION_PATH
       run: |
         npm install
     - name: 'build reference'
       id: build-reference
       shell: bash
+      working-directory: $GITHUB_ACTION_PATH
       run: |
         echo "::notice::Starting backstopjs to generate baseline images."
         npm run-script backstop:reference -- --refURL="${inputs.baseline_url}" -- testURL="${inputs.test_url}"
@@ -72,6 +74,7 @@ runs:
     - name: 'run test'
       id: run-test
       shell: bash
+      working-directory: $GITHUB_ACTION_PATH
       run: |
         echo "::notice::Starting Backstop VRT testing against ${inputs.test_url}"
         npm run-script backstop:test -- --refURL="${inputs.baseline_url}" -- testURL="${inputs.test_url}"
@@ -91,5 +94,5 @@ runs:
       with:
         name: vrt-report
         path: |
-          backstop_data
-          !backstop_data/engine_scripts/*
+          $GITHUB_ACTION_PATH/backstop_data
+          !$GITHUB_ACTION_PATH/backstop_data/engine_scripts/*
