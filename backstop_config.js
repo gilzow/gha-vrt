@@ -6,8 +6,8 @@
 const args = require('minimist')(process.argv.slice(2));
 const scenarios = require(`./${args.scenariosPath}`)(args.testURL, args.refURL);
 
-console.log("testURL given to backstop is " . args.testURL);
-console.log("refURL given to backstop is " . args.refURL);
+console.log("testURL given to backstop is " + args.testURL);
+console.log("refURL given to backstop is " + args.refURL);
 
 module.exports = {
   id: 'visual_test',
