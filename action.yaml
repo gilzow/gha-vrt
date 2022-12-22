@@ -68,16 +68,16 @@ runs:
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
-        echo "::notice::Starting backstopjs to generate baseline images."
-        npm run-script backstop:reference -- --refURL="${inputs.baseline_url}" -- testURL="${inputs.test_url}"
+        echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
+        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" -- testURL="${{inputs.test_url}}"
 
     - name: 'run test'
       id: run-test
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
-        echo "::notice::Starting Backstop VRT testing against ${inputs.test_url}"
-        npm run-script backstop:test -- --refURL="${inputs.baseline_url}" -- testURL="${inputs.test_url}"
+        echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
+        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" -- testURL="${{inputs.test_url}}"
         testresults=$?
         if (0 !== $testresults); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
