@@ -4,8 +4,8 @@
   "description": "Backstop testing for siteName",
   "main": "",
   "dependencies": {
-    "backstopjs": "^4.1.12",
-    "eslint": "^6.1.0",
+    "backstopjs": "^6.1.3",
+    "eslint": "^8.20.0",
     "minimist": "^1.2.0"
   },
   "devDependencies": {},
