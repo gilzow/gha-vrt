@@ -78,8 +78,8 @@ runs:
       run: |
         npm install
     - name: access-to-files
+      uses: actions/checkout@v3
       id: access-to-files
-      shell: bash
       run: |
         echo "::notice::Do we have access to the repo files that we are being used in?"
         ls -al
