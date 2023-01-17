@@ -77,6 +77,12 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         npm install
+    - name: access-to-files
+      id: access-to-files
+      shell: bash
+      run: |
+        echo "::notice::Do we have access to the repo files that we are being used in?"
+        ls -al
     - name: 'build reference'
       id: build-reference
       shell: bash
