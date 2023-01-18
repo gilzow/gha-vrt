@@ -83,7 +83,7 @@ runs:
         fi
         
         # now we need to see if we're missing the trailing directory separator
-        if [[ "${path_location} =~ [^/]$ ]]; then
+        if [[ "${path_location}" =~ [^/]$ ]]; then
           path_location="${path_location}/"
         fi
         echo "::notice::Saving path location as ${path_location}"
