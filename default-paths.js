@@ -1,7 +1,6 @@
 /**
  * This is the default scenarios collection that will be used if there is not a theme-specific scenarios file in place
- * for a given theme. You can either change this file (for single sites), or you can copy this
- * file and then name it site `theme-paths.js`.
+ * for a given theme. You can copy this file and then name it `theme-paths.js`.
  *
  */
 
