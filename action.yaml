@@ -76,7 +76,7 @@ runs:
         # check to see if we have a relative path from the calling repo root
         if [[ "${{inputs.paths_location}}" =~ ^\./ ]]; then
           echo "::notice::Path location is relative to repo root. Setting full path"
-          path_location="${{ GITHUB_WORKSPACE }}/${{ inputs.paths_location }}"
+          path_location="${GITHUB_WORKSPACE}/${{ inputs.paths_location }}"
         else 
           echo "::notice::Path location is already absolute. No need to adjust"
           path_location="${{ inputs.paths_location }}"
