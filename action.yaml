@@ -11,11 +11,9 @@ inputs:
     description: "Do you want this activity to report the results back to the calling workflow (true) or pass/fail directly (false)? Default is false."
     required: false
     default: 'false'
-  #  If we ever decide to post an issue back to the PR?
-#  github-token:
-#    description: 'Github token to the repository so we can work with the github api. Typically GITHUB_TOKEN'
-#    required: true
-  # Not currently implemented
+  paths_location:
+    description: "Path to the theme-paths.js file. Default is ./.github/tests/vrt/ from the theme's repo root"
+    default: "./.github/tests/vrt/"
   threshold:
     description: 'Percentage of different pixels allowed to pass test'
     required: false
