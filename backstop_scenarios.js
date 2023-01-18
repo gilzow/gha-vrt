@@ -64,21 +64,22 @@ let newScenarios = [];
 
 try {
   var templatePaths = require(pathFile);
-  var scenarioPaths = [...defaultPaths, ...templatePaths];
+  var scenarioPaths = [...defaultPaths.paths, ...templatePaths.paths];
 } catch (e) {
+  console.error(e)
   console.log('pathfile didnt work so we\'re going to use ' + __dirname+path.sep+'default-paths.js');
-  var scenarioPaths = defaultPaths;
+  var scenarioPaths = defaultPaths.paths;
 }
 
 /**
  * @todo we need to allow for a deep merge so that the template-paths.js can include an override for the Home and
  * Forced 404 paths.
  */
-for (let i=0;i<scenarioPaths.paths.length;++i) {
-  let newScenario = scenarioPaths.paths[i];
+for (let i=0;i<scenarioPaths.length;++i) {
+  let newScenario = scenarioPaths[i];
   let newPath = newScenario.path;
-  scenarioPaths.paths[i].referenceUrl = `${baselineURL}${newPath}`;
-  scenarioPaths.paths[i].url = `${testURL}${newPath}`;
+  scenarioPaths[i].referenceUrl = `${baselineURL}${newPath}`;
+  scenarioPaths[i].url = `${testURL}${newPath}`;
 
 
   //now that we have referenceURL and url, we dont need path anymore
