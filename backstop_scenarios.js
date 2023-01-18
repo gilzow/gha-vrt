@@ -39,11 +39,17 @@ console.log('scenarios file has been called');
  */
 const test_path = args.testPath ? args.testPath : path.resolve(process.env.GITHUB_WORKSPACE,'.github','tests','vrt') + path.sep;
 console.log('test_path is set to ' + test_path);
+
 /**
- * Absolute location of the template-paths file
+ * TIL node doesn't let you require files with an absolute path. Seems odd, but we'll need to add our test_path to Node's
+ * list of paths it searches, and then just try to require the template-paths.js file
+ */
+require('app-module-path').addPath(test_path);
+/**
+ * The name of the template-paths.js file
  * @type {string}
  */
-const pathFile = test_path+'template-paths.js'
+const pathFile = 'template-paths.js';
 console.log('pathFile is ' + pathFile);
 
 console.log("testURL is " + testURL);
@@ -53,8 +59,7 @@ console.log("baseline is " + baselineURL);
  * Our default paths that (almost) every template should test
  * @type {{}}
  */
-let defaultPaths = {};
-defaultPaths.paths = require(__dirname+path.sep+'default-paths.js');
+let defaultPaths= require(__dirname+path.sep+'default-paths.js');
 
 /**
  * The collection of new scenarios objects that we'll have backstop test
