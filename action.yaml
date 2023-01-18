@@ -76,7 +76,9 @@ runs:
         # check to see if we have a relative path from the calling repo root
         if [[ "${{inputs.paths_location}}" =~ ^\./ ]]; then
           echo "::notice::Path location is relative to repo root. Setting full path"
-          path_location="${GITHUB_WORKSPACE}/${{ inputs.paths_location }}"
+          localRelative="${{ inputs.paths_location }}"
+          # and let's remove the ./ since we're creating a full path
+          path_location="${GITHUB_WORKSPACE}/${localRelative:2}"
         else 
           echo "::notice::Path location is already absolute. No need to adjust"
           path_location="${{ inputs.paths_location }}"
@@ -95,29 +97,29 @@ runs:
       run: |
         npm install
     - uses: actions/checkout@v3
-    - name: 'Copy tests'
-      id: copy-template-tests
-      shell: bash
-      working-directory: ${{ github.action_path }}
-      run: |
-        if [[ -d "${{env.paths_location}}" ]]; then
-          # the template has template-specific tests that we need to copy
-          echo "::notice::the template has template-specific tests that we need to copy"
-          ls -al "${{env.paths_location}}"
-          mkdir -p ./node_modules/template-paths/
-          cp "${{env.paths_location}}"* ./node_modules/template-paths
-          echo "Do we have all the files now?"
-          ls -al ./node_modules/template-paths/
-        else 
-          echo "::notice::the template DOES NOT have template-specific tests that we need to copy"
-        fi
+#    - name: 'Copy tests'
+#      id: copy-template-tests
+#      shell: bash
+#      working-directory: ${{ github.action_path }}
+#      run: |
+#        if [[ -d "${{env.paths_location}}" ]]; then
+#          # the template has template-specific tests that we need to copy
+#          echo "::notice::the template has template-specific tests that we need to copy"
+#          ls -al "${{env.paths_location}}"
+#          mkdir -p ./node_modules/template-paths/
+#          cp "${{env.paths_location}}"* ./node_modules/template-paths
+#          echo "Do we have all the files now?"
+#          ls -al ./node_modules/template-paths/
+#        else
+#          echo "::notice::the template DOES NOT have template-specific tests that we need to copy"
+#        fi
     - name: 'build reference'
       id: build-reference
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
-        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
+        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
 
     - name: 'run test'
       id: run-test
@@ -125,7 +127,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
-        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
+        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
         testresults=$?
         if ( 0 !== $testresults ); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"

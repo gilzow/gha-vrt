@@ -37,8 +37,8 @@ console.log('scenarios file has been called');
  * This SHOULD be set by the github action before it gets to us. If not, try again
  * @type {string}
  */
-//const test_path = args.testPath ? args.testPath : path.resolve(process.env.GITHUB_WORKSPACE,'.github','tests','vrt') + path.sep;
-//console.log('test_path is set to ' + test_path);
+const test_path = args.testPath ? args.testPath : path.resolve(process.env.GITHUB_WORKSPACE,'.github','tests','vrt') + path.sep;
+console.log('test_path is set to ' + test_path);
 
 /**
  * TIL node doesn't let you require files with an absolute path. Seems odd, but we'll need to add our test_path to Node's
@@ -49,7 +49,7 @@ console.log('scenarios file has been called');
  * The name of the template-paths.js file
  * @type {string}
  */
-const pathFile = 'template-paths.js';
+const pathFile = test_path+'template-paths.js';
 console.log('pathFile is ' + pathFile);
 
 console.log("testURL is " + testURL);
@@ -68,6 +68,7 @@ let defaultPaths= require(__dirname+path.sep+'default-paths.js');
 let newScenarios = [];
 
 try {
+  console.log("Going to try and require " + pathFile);
   const templatePaths = require(pathFile);
   var scenarioPaths = [...defaultPaths.paths, ...templatePaths.paths];
 } catch (e) {
