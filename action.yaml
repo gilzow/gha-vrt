@@ -69,6 +69,25 @@ runs:
         else
           echo "report_results=false" >> $GITHUB_ENV
         fi
+    - name: 'Set path file location'
+      id: path-file-location
+      shell: bash
+      run: |
+        # check to see if we have a relative path from the calling repo root
+        if [[ "${{inputs.paths_location}}" =~ ^\./ ]]; then
+          echo "::notice::Path location is relative to repo root. Setting full path"
+          path_location="${{ GITHUB_WORKSPACE }}/${{ inputs.paths_location }}"
+        else 
+          echo "::notice::Path location is already absolute. No need to adjust"
+          path_location="${{ inputs.paths_location }}"
+        fi
+        
+        # now we need to see if we're missing the trailing directory separator
+        if [[ "${path_location} =~ [^/]$ ]]; then
+          path_location="${path_location}/"
+        fi
+        echo "::notice::Saving path location as ${path_location}"
+        echo "pathLocation=${path_location}" >> $GITHUB_ENV
     - name: 'install backstop'
       id: install-backstop
       shell: bash
@@ -88,7 +107,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
-        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
+        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.path_location}}"
 
     - name: 'run test'
       id: run-test
@@ -96,7 +115,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
-        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
+        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.path_location}}"
         testresults=$?
         if ( 0 !== $testresults ); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
