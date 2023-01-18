@@ -68,7 +68,7 @@ let defaultPaths= require(__dirname+path.sep+'default-paths.js');
 let newScenarios = [];
 
 try {
-  var templatePaths = require(pathFile);
+  const templatePaths = require(pathFile);
   var scenarioPaths = [...defaultPaths.paths, ...templatePaths.paths];
 } catch (e) {
   console.error(e)

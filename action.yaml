@@ -95,20 +95,28 @@ runs:
       run: |
         npm install
     - uses: actions/checkout@v3
-    - name: access-to-files
-      id: access-to-files
+    - name: 'Copy tests'
+      id: copy-template-tests
       shell: bash
+      working-directory: ${{ github.action_path }}
       run: |
-        echo "::notice::Do we have access to the repo files that we are being used in?"
-        ls -al
+        if [[ -d "${{env.paths_location}}" ]]; then
+          # the template has template-specific tests that we need to copy
+          echo "::notice::the template has template-specific tests that we need to copy"
+          mkdir -p ./node_modules/template-paths/
+          cp "${{env.paths_location}}*" ./node_modules/template-paths
+          echo "Do we have all the files now?"
+          ls -al ./node_modules/template-paths/
+        else 
+          echo "::notice::the template DOES NOT have template-specific tests that we need to copy"
+        fi
     - name: 'build reference'
       id: build-reference
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
-        export NODE_PATH="${{env.paths_location}}:${NODE_PATH}"
         echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
-        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
+        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
 
     - name: 'run test'
       id: run-test
@@ -116,8 +124,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
-        export NODE_PATH="${{env.paths_location}}:${NODE_PATH}"
-        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
+        npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
         testresults=$?
         if ( 0 !== $testresults ); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
