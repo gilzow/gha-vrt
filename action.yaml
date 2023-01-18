@@ -103,7 +103,7 @@ runs:
         if [[ -d "${{env.paths_location}}" ]]; then
           # the template has template-specific tests that we need to copy
           echo "::notice::the template has template-specific tests that we need to copy"
-          ls -al "{{env.paths_location}}"
+          ls -al "${{env.paths_location}}"
           mkdir -p ./node_modules/template-paths/
           cp "${{env.paths_location}}"* ./node_modules/template-paths
           echo "Do we have all the files now?"
