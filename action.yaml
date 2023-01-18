@@ -125,9 +125,8 @@ runs:
       shell: bash
       run: |
         # set the output
-        #echo "results=${{ env.vrt_results }}" >> $GITHUB_OUTPUTS
-        localResults="${{ env.vrt_results }}"
-        echo "results=${localResults}" >> $GITHUB_OUTPUTS
+        echo "results=${{ env.vrt_results }}" >> $GITHUB_OUTPUT
+        
         if [[ "false" == "${{ env.report_results }}" ]];
           # they want the action result to be the same as the VRT result
           exitcode=$([ "true" = "${{ env.vrt_results }}" ]);
