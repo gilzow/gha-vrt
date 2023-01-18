@@ -106,6 +106,7 @@ runs:
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
+        export NODE_PATH="${{env.paths_location}}:${NODE_PATH}"
         echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
         npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
 
@@ -115,6 +116,7 @@ runs:
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
+        export NODE_PATH="${{env.paths_location}}:${NODE_PATH}"
         npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}"
         testresults=$?
         if ( 0 !== $testresults ); then
