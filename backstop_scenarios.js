@@ -29,7 +29,7 @@ const testURL = args.testURL;
  */
 const baselineURL = args.refURL;
 
-console.log('scenarios file has been called');
+//console.log('scenarios file has been called');
 
 /**
  * Path where our template path file is located
@@ -38,7 +38,7 @@ console.log('scenarios file has been called');
  * @type {string}
  */
 const test_path = args.testPath ? args.testPath : path.resolve(process.env.GITHUB_WORKSPACE,'.github','tests','vrt') + path.sep;
-console.log('test_path is set to ' + test_path);
+//console.log('test_path is set to ' + test_path);
 
 /**
  * TIL node doesn't let you require files with an absolute path. Seems odd, but we'll need to add our test_path to Node's
@@ -50,10 +50,10 @@ console.log('test_path is set to ' + test_path);
  * @type {string}
  */
 const pathFile = test_path+'template-paths.js';
-console.log('pathFile is ' + pathFile);
+//console.log('pathFile is ' + pathFile);
 
-console.log("testURL is " + testURL);
-console.log("baseline is " + baselineURL);
+//console.log("testURL is " + testURL);
+//console.log("baseline is " + baselineURL);
 
 /**
  * Our default paths that (almost) every template should test
@@ -67,14 +67,15 @@ let defaultPaths= require(__dirname+path.sep+'default-paths.js');
  */
 let newScenarios = [];
 
+let scenarioPaths;
 try {
-  console.log("Going to try and require " + pathFile);
+  //console.log("Going to try and require " + pathFile);
   const templatePaths = require(pathFile);
-  var scenarioPaths = [...defaultPaths.paths, ...templatePaths.paths];
+  scenarioPaths = [...defaultPaths.paths, ...templatePaths.paths];
 } catch (e) {
-  console.error(e)
-  console.log('pathfile didnt work so we\'re going to use ' + __dirname+path.sep+'default-paths.js');
-  var scenarioPaths = defaultPaths.paths;
+  //console.error(e)
+  //console.log('pathfile didnt work so we\'re going to use ' + __dirname+path.sep+'default-paths.js');
+  scenarioPaths = defaultPaths.paths;
 }
 
 /**
@@ -94,8 +95,6 @@ for (let i=0;i<scenarioPaths.length;++i) {
   newScenarios.push(newScenario);
 }
 
-const scenarios = newScenarios;
-
 module.exports = {
-  scenarios:scenarios
+  scenarios:newScenarios
 }
