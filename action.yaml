@@ -133,7 +133,7 @@ runs:
         testresults=$?
         echo "::notice::Visual Regression Testing complete. Preparing results..."
         
-        if ( 0 !== $testresults ); then
+        if (( 0 != $testresults )); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
           results="false"
         else
