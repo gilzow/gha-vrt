@@ -130,8 +130,9 @@ runs:
         set +e
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
         suppress=$(npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}")
-        echo "::notice::Visual Regression Testing complete. Preparing results..."
         testresults=$?
+        echo "::notice::Visual Regression Testing complete. Preparing results..."
+        
         if ( 0 !== $testresults ); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
           results="false"
