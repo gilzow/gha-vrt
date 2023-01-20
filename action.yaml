@@ -12,7 +12,7 @@ inputs:
     required: false
     default: 'false'
   paths_location:
-    description: "Path to the theme-paths.js file. Default is ./.github/tests/vrt/ from the theme's repo root"
+    description: "Path to the template-paths.js file. Default is ./.github/tests/vrt/ from the template's repo root"
     default: "./.github/tests/vrt/"
   threshold:
     description: 'Percentage of different pixels allowed to pass test'
