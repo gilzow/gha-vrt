@@ -11,11 +11,9 @@ inputs:
     description: "Do you want this activity to report the results back to the calling workflow (true) or pass/fail directly (false)? Default is false."
     required: false
     default: 'false'
-  #  If we ever decide to post an issue back to the PR?
-#  github-token:
-#    description: 'Github token to the repository so we can work with the github api. Typically GITHUB_TOKEN'
-#    required: true
-  # Not currently implemented
+  paths_location:
+    description: "Path to the template-paths.js file. Default is ./.github/tests/vrt/ from the template's repo root"
+    default: "./.github/tests/vrt/"
   threshold:
     description: 'Percentage of different pixels allowed to pass test'
     required: false
@@ -71,32 +69,75 @@ runs:
         else
           echo "report_results=false" >> $GITHUB_ENV
         fi
+    - name: 'Set path file location'
+      id: path-file-location
+      shell: bash
+      run: |
+        # check to see if we have a relative path from the calling repo root
+        if [[ "${{inputs.paths_location}}" =~ ^\./ ]]; then
+          echo "::notice::Path location is relative to repo root. Setting full path"
+          localRelative="${{ inputs.paths_location }}"
+          # and let's remove the ./ since we're creating a full path
+          path_location="${GITHUB_WORKSPACE}/${localRelative:2}"
+        else 
+          echo "::notice::Path location is already absolute. No need to adjust"
+          path_location="${{ inputs.paths_location }}"
+        fi
+        
+        # now we need to see if we're missing the trailing directory separator
+        if [[ "${path_location}" =~ [^/]$ ]]; then
+          path_location="${path_location}/"
+        fi
+        echo "::notice::Saving path location as ${path_location}"
+        echo "paths_location=${path_location}" >> $GITHUB_ENV
     - name: 'install backstop'
       id: install-backstop
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
         npm install
+    - uses: actions/checkout@v3
+#    - name: 'Copy tests'
+#      id: copy-template-tests
+#      shell: bash
+#      working-directory: ${{ github.action_path }}
+#      run: |
+#        if [[ -d "${{env.paths_location}}" ]]; then
+#          # the template has template-specific tests that we need to copy
+#          echo "::notice::the template has template-specific tests that we need to copy"
+#          ls -al "${{env.paths_location}}"
+#          mkdir -p ./node_modules/template-paths/
+#          cp "${{env.paths_location}}"* ./node_modules/template-paths
+#          echo "Do we have all the files now?"
+#          ls -al ./node_modules/template-paths/
+#        else
+#          echo "::notice::the template DOES NOT have template-specific tests that we need to copy"
+#        fi
     - name: 'build reference'
       id: build-reference
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
         echo "::notice::Starting backstopjs to generate baseline images using ${{inputs.baseline_url}}."
-        npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}"
+        suppress=$(npm run-script backstop:reference -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}")
 
     - name: 'run test'
       id: run-test
+      continue-on-error: true
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
+        set +e
         echo "::notice::Starting Backstop VRT testing against ${{inputs.test_url}}"
-        suppress=$(npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}")
+        suppress=$(npm run-script backstop:test -- --refURL="${{inputs.baseline_url}}" --testURL="${{inputs.test_url}}" --testPath="${{env.paths_location}}")
         testresults=$?
-        if (0 !== $testresults); then
+        echo "::notice::Visual Regression Testing complete. Preparing results..."
+        
+        if (( 0 != $testresults )); then
           echo "::error::Backstop visual regression testing failed. Please see the generated report"
           results="false"
         else
+          echo "::notice::Backstop visual regression testing passed."
           results="true"
         fi
       
@@ -117,8 +158,9 @@ runs:
       shell: bash
       run: |
         # set the output
-        echo "results=${{ env.vrt_results }}" >> $GITHUB_OUTPUTS
-        if [[ "false" == "${{ env.report_results }} ]];
+        echo "results=${{ env.vrt_results }}" >> $GITHUB_OUTPUT
+        
+        if [[ "false" == "${{ env.report_results }}" ]]; then
           # they want the action result to be the same as the VRT result
           exitcode=$([ "true" = "${{ env.vrt_results }}" ]);
           exit ${exitcode}

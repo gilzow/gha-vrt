@@ -3,8 +3,15 @@
  * Backstop configuration.
  */
 
+/**
+ * Arguments passed into backstop
+ * @type {{_: []}}
+ */
 const args = require('minimist')(process.argv.slice(2));
-const scenarios = require(`./${args.scenariosPath}`)(args.testURL, args.refURL);
+/**
+ *
+ */
+const {scenarios} = require(`./backstop_scenarios`);
 
 console.log("testURL given to backstop is " + args.testURL);
 console.log("refURL given to backstop is " + args.refURL);
@@ -48,7 +55,7 @@ module.exports = {
     html_report: 'backstop_data/html_report',
     ci_report: 'backstop_data/ci_report',
   },
-  report: ['browser'],
+  report: ['CI'],
   engine: 'puppeteer',
   engineOptions: {
     args: ['--no-sandbox'],
